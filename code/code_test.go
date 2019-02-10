@@ -35,7 +35,7 @@ func TestInstructionsString(t *testing.T) {
 		Make(OpConstant, 65535),
 	}
 
-	expected := `0000 Opconstant 1
+	expected := `0000 OpConstant 1
 0003 OpConstant 2
 0006 OpConstant 65535
 `
