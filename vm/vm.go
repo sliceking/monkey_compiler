@@ -42,7 +42,6 @@ func (vm *VM) Run() error {
 		case code.OpConstant:
 			constIndex := code.ReadUint16(vm.instructions[ip+1:])
 			ip += 2
-
 			err := vm.push(vm.constants[constIndex])
 			if err != nil {
 				return err
@@ -53,7 +52,6 @@ func (vm *VM) Run() error {
 			left := vm.pop()
 			leftValue := left.(*object.Integer).Value
 			rightValue := right.(*object.Integer).Value
-
 			result := leftValue + rightValue
 			vm.push(&object.Integer{Value: result})
 
