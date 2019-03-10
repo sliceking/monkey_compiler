@@ -105,6 +105,27 @@ func (c *Compiler) Compile(node ast.Node) error {
 		default:
 			return fmt.Errorf("unknown operator %s", node.Operator)
 		}
+
+	case *ast.IfExpression:
+		err := c.Compile(node.Condition)
+		if err != nil {
+			return err
+		}
+
+		// Emit an 'OpJumpNotTruthy' with bogus value
+		jumpNotTruthyPos := c.emit(code.OpJumpNotTruthy, 9999)
+
+		err = c.Compile(node.Consequence)
+		if err != nil {
+			return err
+		}
+
+		if c.lastInstructionIsPop() {
+			c.removeLastPop()
+		}
+
+		afterConsequencePos := len(c.instructions)
+		c.changeOperand(jumpNotTruthyPos, afterConsequencePos)
 	}
 
 	return nil
@@ -125,6 +146,19 @@ func (c *Compiler) addInstruction(ins []byte) int {
 	posNewInstruction := len(c.instructions)
 	c.instructions = append(c.instructions, ins...)
 	return posNewInstruction
+}
+
+func (c *Compiler) replaceInstruction(pos int, newInstruction []byte) {
+	for i := 0; i < len(newInstruction); i++ {
+		c.instructions[pos+i] = newInstruction[i]
+	}
+}
+
+func (c *Compiler) changeOperand(opPos int, operand int) {
+	op := code.Opcode(c.instructions[opPos])
+	newInstruction := code.Make(op, operand)
+
+	c.replaceInstruction(opPos, newInstruction)
 }
 
 func (c *Compiler) Bytecode() *Bytecode {
