@@ -380,7 +380,7 @@ func TestFunctionsWithoutReturnValue(t *testing.T) {
 	runVmTests(t, tests)
 }
 
-func TestFurstClassFunctions(t *testing.T) {
+func TestFirstClassFunctions(t *testing.T) {
 	tests := []vmTestCase{
 		{
 			input: `
